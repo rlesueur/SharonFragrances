@@ -2,6 +2,6 @@ namespace SharonFragrances
 {
     public interface iStackFeeder
     {
-        int? CurrentStackPosition { get; set; }
+        string Command(string command);
     }
 }
