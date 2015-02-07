@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharonFragrances.Specifications
+namespace SharonFragrances.API
 {
     public class Class1
     {
