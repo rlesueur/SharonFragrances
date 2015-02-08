@@ -9,25 +9,23 @@ namespace SharonFragrances.Specifications
     [TestFixture]
     public class StackSpecifications
     {
-        [Ignore("BM 08022015 hived off to create concept of stack and coupling" )]
-        [TestCase("rdddddi", Result = "c54675890")]
-        [TestCase("rdddddi", Result = "c54675890")]
-        [TestCase("rdddddi", Result = "c54675890")]
-        [TestCase("rdddddi", Result = "c54675890")]
-        [TestCase("rdddddi", Result = "c54675890")]
-        public void CanInitialiseStackFromString(string commandSequence)
+        [TestCase("rddddi", Result = "c54675890")]
+        [TestCase("rddddddddi", Result = "c7867546")]
+        [TestCase("rdddddi", Result = "c897865")]
+        [TestCase("rrrdddddi", Result = "c786765")]
+        [TestCase("rrdddddi", Result = "c445673")]
+        public string CanInitialiseStackFromString(string commandSequence)
         {
             //Arrange
-            const string expectedResult = "c897865";
-            const string stock = "1:4:c54675890:10;1:8:c7867546:5;1:5:c897865:100;1:5:c786765:3;1:5:c445673:10";
+            const string stock = "1:4:c54675890:10;1:8:c7867546:5;1:5:c897865:100;3:5:c786765:3;2:5:c445673:10";
             var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
             var stackFeeder = new StackFeeder(stacks, stock);
 
             //Act
-            var result = stackFeeder.Command("rdddddi");
+            var result = stackFeeder.Command(commandSequence);
 
             //Assert
-            result.Should().Be(expectedResult);
+            return result;
         }
 
         [Test]
