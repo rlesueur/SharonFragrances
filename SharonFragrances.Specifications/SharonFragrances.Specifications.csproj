@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="NavigateFeederStackSpecifications.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StackSpecifications.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

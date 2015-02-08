@@ -1,8 +1,9 @@
-using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using SharonFragrances.API;
 
 namespace SharonFragrances.Specifications
 {
@@ -14,7 +15,8 @@ namespace SharonFragrances.Specifications
         {
             //Arrange
             const string expectedPosition = "0";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
             //Act
             var stackPostition = stackFeeder.Command("s");
@@ -28,7 +30,8 @@ namespace SharonFragrances.Specifications
         {
             //Arrange 
             const string expectedPosition = "1";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
             //Act
             stackFeeder.Command("r");
@@ -42,7 +45,8 @@ namespace SharonFragrances.Specifications
         {
             //Arrange
             const string expectedPosition = "2";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
             //Act
             var result = stackFeeder.Command("rrs");
@@ -58,7 +62,8 @@ namespace SharonFragrances.Specifications
             const string expectedPosition = "4";
 
             //Act
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
             var result = stackFeeder.Command("rrrrs");
 
             //Assert
@@ -72,7 +77,8 @@ namespace SharonFragrances.Specifications
             const string expectedResult = "0";
 
             //Act
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
             var result = stackFeeder.Command("qs");
 
             //Assert
@@ -84,7 +90,8 @@ namespace SharonFragrances.Specifications
         {
             //Arrange
             const string expectedResult = "0";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
             stackFeeder.Command("r");
 
             //Act
@@ -99,7 +106,8 @@ namespace SharonFragrances.Specifications
         {
             //Arrange
             const string expectedResult = "1";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
             stackFeeder.Command("r");
 
             //Act
@@ -109,12 +117,14 @@ namespace SharonFragrances.Specifications
             stackFeeder.Command("b").Should().Be(expectedResult);
         }
 
+
         [Test]
         public void FeederCanMoveUp()
         {
             //Arrange
             const string expectedResult = "1";
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
             stackFeeder.Command("r");
             stackFeeder.Command("dd");
 
@@ -126,85 +136,44 @@ namespace SharonFragrances.Specifications
         }
 
         [Test]
-        [ExpectedException("SharonFragrances.Specifications.FeederNotOnStack")]
+        [ExpectedException("SharonFragrances.API.FeederNotOnStack")]
         public void FeederCannotMoveDownBinIfNotOnStack()
         {
             //Arrange
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
             //Act
             stackFeeder.Command("d");
         }
 
         [Test]
-        [ExpectedException("SharonFragrances.Specifications.FeederNotOnStack")]
+        [ExpectedException("SharonFragrances.API.FeederNotOnStack")]
         public void FeederCannotMoveUpBinIfNotOnStack()
         {
             //Arrange
-            var stackFeeder = new StackFeeder();
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
             //Act
             stackFeeder.Command("u");
         }
-    }
 
-
-
-    public class StackFeeder : iStackFeeder
-    {
-        private int _stackPosition;
-        private int _binPosition;
-
-        public string Command(string command)
+        [Test]
+        [Ignore ("RLS 08022015 2047 halted to create stack")]
+        public void FeederCanRetrieveItemCode()
         {
-            string result = String.Empty;
+            //Arrange
+            const string expectedResult = "c54675890";
+            var stacks = new List<IStack> { new Stack(), new Stack(), new Stack(), new Stack() };
+            var stackFeeder = new StackFeeder(stacks, string.Empty);
 
-            foreach (var c in command)
-            {
-                if (c == 'r')
-                {
-                    _stackPosition = ++_stackPosition;
-                }
-                if (c == 's')
-                {
-                    result = _stackPosition.ToString();
-                }
-                if (c == 'q')
-                {
-                    _stackPosition = 0;
-                }
-                if (c == 'b')
-                {
-                    result = _binPosition.ToString();
-                }
-                if (c == 'd')
-                {
-                    if (_stackPosition != 0)
-                    {
-                        _binPosition = ++_binPosition;
-                    }
-                    else
-                    {
-                        throw new FeederNotOnStack();
-                    }
-                }
-                if (c == 'u')
-                {
-                    if (_stackPosition != 0)
-                    {
-                        _binPosition = --_binPosition;
-                    }
-                    else
-                    {
-                        throw new FeederNotOnStack();
-                    }
-                }
-            }
-            return result;
+            //Act
+            var result = stackFeeder.Command("rdddddi");
+
+            //Assert
+            result.Should().Be(expectedResult);
         }
-    }
 
-    public class FeederNotOnStack : Exception
-    {
     }
 }
